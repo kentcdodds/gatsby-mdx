@@ -96,8 +96,8 @@ module.exports = async function getSourcePluginsAsRemarkPlugins({
     });
 
   if (pathPlugin) {
-    return [pathPlugin, ...userPlugins, [htmlToJSXPlugin, {}]];
+    return [pathPlugin, ...userPlugins];
   } else {
-    return [...userPlugins, [htmlToJSXPlugin, {}]];
+    return [...userPlugins];
   }
 };

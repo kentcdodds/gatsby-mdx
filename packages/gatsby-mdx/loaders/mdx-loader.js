@@ -157,7 +157,13 @@ ${contentWithoutFrontmatter}`;
 
   code = await mdx(code, {
     ...options,
-    mdPlugins: options.mdPlugins.concat(gatsbyRemarkPluginsAsMDPlugins)
+    mdPlugins: options.mdPlugins.concat(gatsbyRemarkPluginsAsMDPlugins),
+    hastPlugins: options.hastPlugins.concat((node, options) => ast => {
+      const visit = require("unist-util-visit");
+      visit(ast, "jsx", node => {
+        console.log("here", node.value);
+      });
+    })
   });
 
   return callback(
