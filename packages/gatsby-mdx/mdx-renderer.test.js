@@ -13,14 +13,6 @@ describe("mdx-renderer", () => {
     expect(result.toJSON()).toEqual("return 2");
   });
 
-  test("fails to render React elements without scope", () => {
-    expect(() => {
-      TestRenderer.create(
-        <MDXRenderer>{`return () => React.createElement('div')`}</MDXRenderer>
-      );
-    }).toThrow(ReferenceError);
-  });
-
   test("renders React elements when scope is provided", () => {
     const result = TestRenderer.create(
       <MDXRenderer
