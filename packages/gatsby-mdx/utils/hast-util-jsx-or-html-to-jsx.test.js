@@ -68,6 +68,8 @@ const shouldBeUntouched = [
 
 const babel = require("@babel/core");
 const jsxSyntax = require("@babel/plugin-syntax-jsx");
+const { camelCase } = require("change-case");
+const toStyleObject = require("to-style").object;
 
 describe("hast-util-jsx-or-html-to-jsx", () => {
   test.each(shouldParseAsJSX)("identifies legal jsx", ({ raw, result }) => {
@@ -116,5 +118,50 @@ describe("hast-util-jsx-or-html-to-jsx", () => {
         await file;
         //        expect(raw).toBe(String(file));
       });
+  });
+});
+
+var TRANSLATIONS = {
+  class: "className",
+  for: "htmlFor"
+};
+
+var nestedVisitor = {
+  JSXAttribute: function(node) {
+    if (node.node.name.name in TRANSLATIONS) {
+      node.node.name.name = TRANSLATIONS[node.node.name.name];
+    } else if (
+      node.node.name.name.includes("-") &&
+      !node.node.name.name.startsWith("data") &&
+      !node.node.name.name.startsWith("aria")
+    ) {
+      node.node.name.name = camelCase(node.node.name.name);
+    }
+    if (node.node.name.name === "style") {
+      console.log("style", node.node.value.extra.rawValue);
+      const styleObject = toStyleObject(node.node.value.extra.rawValue, {
+        camelize: true
+      });
+      console.log(styleObject);
+      node.node.value.value = `{${JSON.stringify(styleObject)}}`;
+    }
+  }
+};
+
+function attrs() {
+  return {
+    visitor: {
+      JSXElement: function(path, file) {
+        path.traverse(nestedVisitor);
+      }
+    }
+  };
+}
+describe("test a plugin", () => {
+  test.each(shouldParseAsHTML)("converts attrs", html => {
+    expect(
+      babel.transform(html, { configFile: false, plugins: [jsxSyntax, attrs] })
+        .code
+    ).toBe("test");
   });
 });
