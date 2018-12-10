@@ -29,7 +29,7 @@ var nestedVisitor = {
 module.exports = function attrs() {
   return {
     visitor: {
-      JSXElement: function(path, file) {
+      JSXElement: function(path) {
         path.traverse(nestedVisitor);
       }
     }
