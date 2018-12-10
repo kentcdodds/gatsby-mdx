@@ -68,8 +68,6 @@ const shouldBeUntouched = [
 
 const babel = require("@babel/core");
 const jsxSyntax = require("@babel/plugin-syntax-jsx");
-const { camelCase } = require("change-case");
-const toStyleObject = require("to-style").object;
 
 describe("hast-util-jsx-or-html-to-jsx", () => {
   test.each(shouldParseAsJSX)("identifies legal jsx", ({ raw, result }) => {

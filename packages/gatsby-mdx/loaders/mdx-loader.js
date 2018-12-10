@@ -9,6 +9,7 @@ const {
   BLOCKS_REGEX,
   EMPTY_NEWLINE
 } = require("@mdx-js/mdx/util");
+const babel = require("@babel/core");
 
 const toMDAST = require("remark-parse");
 const squeeze = require("remark-squeeze-paragraphs");
@@ -166,13 +167,21 @@ ${contentWithoutFrontmatter}`;
     })
   });
 
+  const result = babel.transform(code, {
+    plugins: [
+      require("@babel/plugin-syntax-jsx"),
+      require("@babel/plugin-syntax-object-rest-spread"),
+      require("../utils/babel-plugin-html-attr-to-jsx-attr")
+    ]
+  });
+
   return callback(
     null,
     `import React from 'react'
 import { MDXTag } from '@mdx-js/tag'
 
 
-${code}
-  `
+${result.code}
+    `
   );
 };
