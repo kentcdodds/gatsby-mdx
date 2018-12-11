@@ -1,6 +1,7 @@
 const { camelCase } = require("change-case");
 const toStyleObject = require("to-style").object;
 const t = require("@babel/types");
+const generate = require("@babel/generator");
 
 var TRANSLATIONS = {
   class: "className",
@@ -66,6 +67,24 @@ module.exports = function attrs() {
     visitor: {
       JSXElement: function(path) {
         path.traverse(nestedVisitor);
+
+        if (
+          path.node.openingElement.name.name ===
+          "annotation" /* && if gatsby-remark-katex is enabled*/
+        ) {
+          const genCode = path.node.children.map(
+            ast => generate.default(ast).code
+          );
+          path.node.children = [
+            t.jSXText(
+              genCode
+                .join("")
+                .replace("{", "&#123;")
+                .replace("}", "&#125;")
+            )
+          ];
+          //          path.traverse(katexFixupVisitor);
+        }
       }
     }
   };
