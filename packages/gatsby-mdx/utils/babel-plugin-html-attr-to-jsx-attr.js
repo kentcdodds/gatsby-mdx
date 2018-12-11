@@ -4,7 +4,8 @@ const t = require("@babel/types");
 
 var TRANSLATIONS = {
   class: "className",
-  for: "htmlFor"
+  for: "htmlFor",
+  srcset: "srcSet"
 };
 
 const valueFromType = value => {
@@ -20,10 +21,19 @@ const valueFromType = value => {
   }
 };
 
+const propsKeysVisitor = {
+  ObjectProperty(node) {
+    if (node.node.key.extra.rawValue in TRANSLATIONS) {
+      node.node.key.value = TRANSLATIONS[node.node.key.value];
+    }
+  }
+};
 var nestedVisitor = {
   JSXAttribute: function(node) {
     if (node.node.name.name in TRANSLATIONS) {
       node.node.name.name = TRANSLATIONS[node.node.name.name];
+    } else if (node.node.name.name === "props") {
+      node.traverse(propsKeysVisitor);
     } else if (
       node.node.name.name.includes("-") &&
       !node.node.name.name.startsWith("data") &&
