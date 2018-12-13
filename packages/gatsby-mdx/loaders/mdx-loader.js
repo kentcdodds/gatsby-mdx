@@ -14,6 +14,7 @@ const babel = require("@babel/core");
 const toMDAST = require("remark-parse");
 const squeeze = require("remark-squeeze-paragraphs");
 const debug = require("debug")("gatsby-mdx:mdx-loader");
+const debugMore = require("debug")("gatsby-mdx-info:mdx-loader");
 
 const mdx = require("../utils/mdx");
 const getSourcePluginsAsRemarkPlugins = require("../utils/get-source-plugins-as-remark-plugins");
@@ -161,15 +162,15 @@ ${contentWithoutFrontmatter}`;
     mdPlugins: options.mdPlugins.concat(gatsbyRemarkPluginsAsMDPlugins),
     hastPlugins: options.hastPlugins
   });
-
   const result = babel.transform(code, {
+    configFile: false,
     plugins: [
       require("@babel/plugin-syntax-jsx"),
       require("@babel/plugin-syntax-object-rest-spread"),
       require("../utils/babel-plugin-html-attr-to-jsx-attr")
     ]
   });
-
+  debugMore("transformed code", result.code);
   return callback(
     null,
     `import React from 'react'

@@ -25,11 +25,12 @@ const valueFromType = value => {
 const propsKeysVisitor = {
   ObjectProperty(node) {
     if (node.node.key.extra.rawValue in TRANSLATIONS) {
-      node.node.key.value = TRANSLATIONS[node.node.key.value];
+      node.node.key.value =
+        TRANSLATIONS[node.node.key.value] || node.node.key.value;
     }
   }
 };
-var nestedVisitor = {
+var jsxAttributeFromHTMLAttributeVisitor = {
   JSXAttribute: function(node) {
     if (node.node.name.name in TRANSLATIONS) {
       node.node.name.name = TRANSLATIONS[node.node.name.name];
@@ -66,7 +67,7 @@ module.exports = function attrs() {
   return {
     visitor: {
       JSXElement: function(path) {
-        path.traverse(nestedVisitor);
+        path.traverse(jsxAttributeFromHTMLAttributeVisitor);
 
         if (
           path.node.openingElement.name.name ===
@@ -83,7 +84,6 @@ module.exports = function attrs() {
                 .replace("}", "&#125;")
             )
           ];
-          //          path.traverse(katexFixupVisitor);
         }
       }
     }
