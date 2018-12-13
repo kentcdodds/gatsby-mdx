@@ -109,6 +109,7 @@ module.exports = async function genMDX({
   debug("compiling scope");
   const instance = new BabelPluginPluckImports();
   const result = babel.transform(code, {
+    configFile: false,
     plugins: [instance.plugin, objRestSpread, htmlAttrToJSXAttr],
     presets: [require("@babel/preset-react")]
   });
